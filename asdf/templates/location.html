@@ -1,0 +1,47 @@
+<!-- location.html -->
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>내 위치 가져오기</title>
+</head>
+<body>
+    <h1>내 위치 정보</h1> 
+    <button id="getLocation">내 위치 가져오기</button>
+    <p id="status"></p>
+
+    <script>
+        document.getElementById('getLocation').addEventListener('click', function() {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(showPosition, showError);
+            } else {
+                document.getElementById('status').textContent = 'Geolocation is not supported by your browser.';
+            }
+        });
+
+        function showPosition(position) {
+            const latitude = position.coords.latitude;
+            const longitude = position.coords.longitude;
+            document.getElementById('status').textContent = '위도: ' + latitude + ', 경도: ' + longitude;
+        }
+
+        function showError(error) {
+            switch(error.code) {
+                case error.PERMISSION_DENIED:
+                    document.getElementById('status').textContent = "사용자가 위치 정보를 요청하는 것을 거부했습니다.";
+                    break;
+                case error.POSITION_UNAVAILABLE:
+                    document.getElementById('status').textContent = "위치 정보를 사용할 수 없습니다.";
+                    break;
+                case error.TIMEOUT:
+                    document.getElementById('status').textContent = "위치 정보 요청이 시간 초과되었습니다.";
+                    break;
+                case error.UNKNOWN_ERROR:
+                    document.getElementById('status').textContent = "알 수 없는 오류가 발생했습니다.";
+                    break;
+            }
+        }
+    </script>
+</body>
+</html>

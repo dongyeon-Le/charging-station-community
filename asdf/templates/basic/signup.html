@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>회원가입</title>
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #f7f7f7;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .signup-container {
+            background-color: #fff;
+            padding: 50px;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            max-width: 500px;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        h2 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 30px;
+            font-size: 2rem;
+        }
+
+        input {
+            width: 100%;
+            padding: 15px;
+            margin: 10px 0;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 1rem;
+            box-sizing: border-box;
+        }
+
+        .row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .row input {
+            flex: 1;
+        }
+
+        .row button {
+            flex: 0.3;
+            padding: 12px;
+            background-color: #555;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1rem;
+            margin-left: 10px;
+        }
+
+        .c-container {
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .c-container input {
+            width: 30%;
+            margin: 0;
+        }
+
+        .address-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 10px 0;
+        }
+
+        .address-container input {
+            flex: 1;
+        }
+
+        .address-container button {
+            flex: 0.4;
+            padding: 12px;
+            background-color: #555;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-left: 10px;
+            font-size: 1rem;
+        }
+
+        button[type="submit"] {
+            width: 100%;
+            padding: 15px;
+            background-color: #555;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 1.2rem;
+            cursor: pointer;
+            margin-top: 20px;
+        }
+
+        a {
+            display: block;
+            text-align: center;
+            margin-top: 15px;
+            color: #555;
+            text-decoration: none;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+
+        /* 반응형 스타일 */
+        @media (max-width: 768px) {
+            .signup-container {
+                padding: 30px;
+            }
+            h2 {
+                font-size: 1.8rem;
+            }
+            input, button {
+                font-size: 1rem;
+            }
+            .row button, .address-container button {
+                font-size: 0.9rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .signup-container {
+                padding: 20px;
+            }
+            h2 {
+                font-size: 1.5rem;
+            }
+            input, button {
+                font-size: 0.9rem;
+            }
+            .row button, .address-container button {
+                font-size: 0.8rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="signup-container">
+        <h2>회원가입</h2>
+        <form action="{% url '회원가입 액션' %}" method="POST" id="signupForm" onsubmit="return handleSubmit(event);">
+            {% csrf_token %}
+            <div class="row">
+                <input type="text" id="input_user_id" name="input_user_id" placeholder="아이디" pattern="[a-z0-9]+" title="아이디는 소문자와 숫자만 가능합니다" autofocus required>
+                <button type="button" onclick="dupIdCheck()">중복 확인</button>
+            </div>
+            <input type="password" id="input_password" name="input_password" placeholder="비밀번호" required>
+            <input type="password" id="confirmPassword" name="confirmPassword" placeholder="비밀번호 확인" required>
+            <input type="text" id="UserName" name="input_name" placeholder="이름" required>
+            <div class="row">
+                <input type="email" id="input_email" name="input_email" placeholder="이메일" required>
+            </div>
+            <div class="c-container">
+                <input type="text" id="phone_1" name="input_phone_1" maxlength="3" placeholder="010" required>
+                <span>-</span>
+                <input type="text" id="phone_2" name="input_phone_2" maxlength="4" placeholder="0000" required>
+                <span>-</span>
+                <input type="text" id="phone_3" name="input_phone_3" maxlength="4" placeholder="0000" required>
+            </div>
+            <div class="address-container">
+                <input type="text" id="input_Address" name="input_Address" placeholder="주소" required>
+                <button type="button" onclick="openDaumPostcode()">주소 찾기</button>
+            </div>
+            <input type="text" id="input_Address_detail" name="input_Address_detail" placeholder="상세주소" required>
+            <button type="submit">가입하기</button>
+        </form>
+        <a href="{% url '메인페이지' %}">메인페이지로 가기</a>
+    </div>
+    
+    <!-- 다음 주소 검색 API 추가 -->
+    <script src="https://t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
+    <script>
+        function openDaumPostcode() {
+            new daum.Postcode({
+                oncomplete: function(data) {
+                    document.getElementById('input_Address').value = data.address;
+                }
+            }).open();
+        }
+
+        // 아이디 중복 확인
+        function dupIdCheck() {
+            const userId = document.getElementById('input_user_id').value;
+            fetch("{% url '아이디 중복확인' %}?input_user_id=" + userId)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.exists) {
+                        alert("이미 사용 중인 아이디입니다.");
+                    } else {
+                        alert("사용 가능한 아이디입니다.");
+                    }
+                });
+        }
+    </script>
+</body>
+</html>

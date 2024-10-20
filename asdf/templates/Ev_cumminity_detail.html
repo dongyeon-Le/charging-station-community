@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ station_info.충전소명 }} 상세 정보</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #f8f9fa;
+            margin: 0;
+            padding: 20px;
+            text-align: center; /* 중앙 정렬 */
+        }
+        h1 {
+            color: #333;
+            font-size: 2rem;
+            margin-bottom: 10px; /* 제목과 맵 사이의 간격 줄이기 */
+        }
+        h3 {
+            color: #007bff;
+            margin-bottom: 10px; /* 제목과 맵 사이의 간격 줄이기 */
+        }
+        #map {
+            height: 300px; /* 맵의 높이를 줄여서 화면에 더 잘 맞게 설정 */
+            width: 100%; /* 너비를 100%로 설정하여 반응형 */
+            margin-bottom: 20px; /* 맵과 다른 요소 사이 간격 */
+        }
+        p {
+            margin: 5px 0; /* 단락 간격 조정 */
+            color: #555;
+        }
+        a {
+            text-decoration: none;
+            color: #007bff;
+            font-weight: bold;
+            margin-top: 20px;
+            display: inline-block; /* 링크를 블록으로 설정하여 간격 추가 */
+            transition: color 0.3s;
+        }
+        a:hover {
+            color: #0056b3; /* 링크 호버 시 색상 변경 */
+        }
+        /* 모바일 친화적인 조정 */
+        @media (max-width: 768px) {
+            #map {
+                height: 250px; /* 모바일에서 맵 높이 조정 */
+            }
+            h1 {
+                font-size: 1.8rem; /* 모바일에서 제목 크기 조정 */
+            }
+            h3 {
+                font-size: 1.5rem; /* 모바일에서 서브 제목 크기 조정 */
+            }
+        }
+    </style>
+</head>
+<body>
+    <h1>{{ station_info.충전소명 }} 상세 정보</h1>
+    <div id="map"></div> <!-- 여기에 Leaflet 지도가 표시됩니다 -->    
+    <p>주소: {{ station_info.충전소주소 }}</p>
+    <p>상세주소: {{ station_info.상세주소 }}</p>
+    <p>이용 가능 시간: {{ station_info.이용가능시간 }}</p>
+    <p>급속충전기: {{ station_info.급속충전기 }} (대)</p>
+    <p>완속충전기: {{ station_info.완속충전기 }} (대)</p>
+    <p>지원차종: {{ station_info.지원차종 }}</p>
+    <a href="{% url '메인페이지' %}">목록으로 돌아가기</a>
+
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+    <script>
+        var latitude = '{{ station_info.위도 }}';
+        var longitude = '{{ station_info.경도 }}';
+        var map = L.map('map').setView([latitude, longitude], 18); // 서울 좌표와 줌 레벨 설정
+
+        // OpenStreetMap 타일을 불러오기
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 19
+        }).addTo(map);
+
+        // 마커 추가
+        L.marker([latitude, longitude]).addTo(map)
+            .bindPopup('{{ station_info.충전소명 }}<br>{{ station_info.충전소주소 }}') 
+            .openPopup();
+    </script>    
+</body>
+</html>
